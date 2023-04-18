@@ -1,4 +1,4 @@
-const authRoutes = (fastify, options, done) => {
+const getProfile = (fastify, options, done) => {
   fastify.post('/profile', async (req, reply) => {
     const { gameName, tagLine } = req.body || {}
 
@@ -17,15 +17,23 @@ const authRoutes = (fastify, options, done) => {
       reply.send({ status: 200, data: error.response.data })
     }
   })
+}
+
+const getChromas = (fastify, options, done) => {
   fastify.get('/content', async (req, reply) => {
     try {
       const response = await fastify.axios.content.get(`/val/content/v1/contents?locale=en-US`)
       
-      reply.send(response.data)
+      reply.send(response.data.chromas)
     } catch (error) {
       reply.send({ status: 200, data: error.response.data })
     }
   })
+}
+
+const authRoutes = (fastify, options, done) => {
+  getProfile(fastify, options, done),
+  getChromas(fastify, options, done),
   done()
 }
 
