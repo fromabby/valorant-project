@@ -1,0 +1,1 @@
+export const RIOT_AUTH_LINK = 'https://auth.riotgames.com/api/v1/authorization'
