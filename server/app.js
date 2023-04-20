@@ -3,6 +3,7 @@ const fastify = require('fastify')()
 const cors = require('@fastify/cors')
 const axios = require('fastify-axios')
 const fastifyEnv = require('@fastify/env')
+const fastifyCookie = require('@fastify/cookie')
 
 // env config
 const schema = {
@@ -39,12 +40,21 @@ fastify.register(fastifyEnv, options).after(() => {
         headers: {
           'X-Riot-Token': fastify.env.DEVELOPMENT_API_KEY
         }
+      },
+      valorantApi: {
+        baseURL: ''
       }
     }
   })
 })
 
 fastify.register(cors, {})
+
+fastify.register(fastifyCookie, {
+  secret: "my-secret", // for cookies signature
+  hook: 'onRequest', // set to false to disable cookie autoparsing or set autoparsing on any of the following hooks: 'onRequest', 'preParsing', 'preHandler', 'preValidation'. default: 'onRequest'
+  parseOptions: {}  // options for parsing cookies
+})
 
 // routes
 const authRoute = require('./routes/auth.js')

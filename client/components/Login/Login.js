@@ -1,24 +1,68 @@
-import { useEffect, useState } from 'react'
-import { StyleSheet, Text, View, TextInput, Button } from 'react-native'
+import { useMemo, useState } from 'react'
+import { StyleSheet, Image, Text, View, TextInput, Button } from 'react-native'
+import data from '../../constants/skins'
 import axios from 'axios'
-
-const POST_COOKIE = `https://auth.riotgames.com/api/v1/authorization`
-const GET_PLAYER_INFO = `https://auth.riotgames.com/userinfo`
-const GET_STORE = (puuid) => `https://pd.ap.a.pvp.net/store/v2/storefront/${puuid}`
 
 const Login = ({ navigation }) => {
   const [username, onChangeUsername] = useState('')
   const [password, onChangePassword] = useState('')
-  const [data, setData] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+  const [store, setStore] = useState([])
 
   const onLogin = async () => {
-    const { data: { data } } = await axios.get(`http://127.0.0.1:3000/`)
-    setData(data)
+    setErrorMessage('')
+    setIsLoading(true)
+    try {
+      const { data } = await axios.post(`http://127.0.0.1:3000/login`, {
+        username,
+        password
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      
+      if(data.success === true) {
+        setStore(data.store)
+      } else {
+        setErrorMessage(data.message)
+      }
+      setIsLoading(false)
+    } catch (error) {
+      setErrorMessage(error.message)
+      setIsLoading(false)
+    }
   }
+
+  const images = useMemo(() => {
+    const list = []
+    if (store.length > 0) {
+      store.map(item => {
+        data.skins.map(({ displayName, fullRender }) => {
+          if (item === displayName) {
+            list.push([displayName, fullRender])
+          }
+        })
+      })
+    }
+
+    return list
+  }, [store])
 
   return (
     <View style={styles.container}>
-      <Text>{JSON.stringify(data)}</Text>
+      {images.length > 0 &&
+        <View style={styles.flexContainer} >
+          {images.map(item => 
+            <View key={item[0]} style={styles.imageContainer}>
+              <Image source={{ uri: item[1] }} style={styles.image}/>
+              <Text>{item[0]}</Text>
+            </View>
+          )}
+        </View>
+      }
       <TextInput 
         style={styles.input}
         placeholder='Username'
@@ -34,9 +78,11 @@ const Login = ({ navigation }) => {
         nativeID='password'
         secureTextEntry
       />
+      {errorMessage && <Text>{errorMessage}</Text>}
       <Button
         title='Login'
         onPress={onLogin}
+        disabled={isLoading || !username || !password}
       />
     </View>
   )
@@ -55,6 +101,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  flexContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    width: '100%',
+    height: 50
+  },
+  imageContainer: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
+}
 })
 
 export default Login
