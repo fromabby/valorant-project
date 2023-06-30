@@ -1,4 +1,4 @@
-import VALORANT_IDS from "../constants/ids.js"
+import { SKIN_LEVELS } from "../constants/skins.js"
 import axios from "axios"
 
 class ValorantService {
@@ -124,7 +124,7 @@ class ValorantService {
 
     const names = []
     storeOffers.map(offer => {
-      const skin = VALORANT_IDS.skinLevels.find(x => x.id.toLowerCase() === offer)
+      const skin = SKIN_LEVELS.find(x => x.id.toLowerCase() === offer)
       names.push(skin ? skin.name : '')
     })
 
