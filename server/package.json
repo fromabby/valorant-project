@@ -2,22 +2,21 @@
   "name": "valorant-api",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "src/index.js",
   "dependencies": {
-    "@fastify/cookie": "^8.3.0",
     "@fastify/cors": "^8.2.1",
-    "@fastify/env": "^4.2.0",
+    "axios": "^1.4.0",
+    "dotenv": "^16.3.1",
     "fastify": "^4.15.0",
-    "fastify-axios": "^1.2.6",
     "fastify-swagger": "^5.2.0",
     "nodemon": "^2.0.22"
   },
-  "devDependencies": {},
   "scripts": {
-    "start": "node server",
-    "dev": "nodemon server"
+    "start": "node src/index",
+    "dev": "nodemon src/index"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "type": "module"
 }
