@@ -2,9 +2,7 @@ import AGENTS from "../constants/agents.js"
 
 class Agents {
   findAll() {
-    return {
-      data: AGENTS
-    }
+    return AGENTS
   }
 
   findByName(searchTerm) {
