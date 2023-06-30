@@ -1,16 +1,13 @@
-import fastify from "fastify"
-import fastifyCors from '@fastify/cors'
-import authRoute from './routes/auth.js'
+import baseApp from './base-app.js'
+import buildAuthApp from './auth-app.js'
+import buildAgentApp from './agents-app.js'
 
-const buildServer = (opts = {}) => {
-  const app = fastify(opts)
-
-  app.register(fastifyCors, {})
-
-  // routes
-  app.register(authRoute)
+export const buildDevApp = (opts = {}) => {
+  let app = baseApp(opts)
+  app = buildAuthApp(app)
+  app = buildAgentApp(app)
 
   return app
 }
 
-export default buildServer
+export default buildDevApp

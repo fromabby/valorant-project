@@ -18,8 +18,8 @@ const authRoutes = (fastify, options, done) => {
         message: error.response.data
       })
     }
-  }),
-    done()
+  })
+  done()
 }
 
 export default authRoutes

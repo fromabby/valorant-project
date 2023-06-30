@@ -1,4 +1,4 @@
-const CHARACTERS = [
+const AGENTS = [
   {
     "name": "Gekko",
     "id": "E370FA57-4757-3604-3648-499E1F642D3F",
@@ -116,4 +116,4 @@ const CHARACTERS = [
   }
 ]
 
-export default CHARACTERS
+export default AGENTS
