@@ -1,3 +1,4 @@
+import Skins from "../models/Skins.js"
 import ValorantService from "../services/ValorantService.js"
 
 const authRoutes = (fastify, options, done) => {
@@ -6,7 +7,9 @@ const authRoutes = (fastify, options, done) => {
     try {
       const valorant = new ValorantService(username, password)
 
-      const { skins } = await valorant.initializeUser()
+      const { storeOffers } = await valorant.initializeUser()
+
+      const skins = new Skins().findStoreItems(storeOffers)
 
       reply.send({
         success: true,

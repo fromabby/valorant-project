@@ -1,4 +1,3 @@
-import { SKIN_LEVELS } from "../constants/skins.js"
 import axios from "axios"
 
 class ValorantService {
@@ -72,10 +71,10 @@ class ValorantService {
 
     await this.getEntitlement()
     await this.getUserInfo()
-    const skins = await this.getStore()
+    const storeOffers = await this.getStore()
 
     return {
-      skins,
+      storeOffers,
       playerId: this.playerId
     }
   }
@@ -122,13 +121,7 @@ class ValorantService {
 
     const storeOffers = storeResponse.data['SkinsPanelLayout']['SingleItemOffers']
 
-    const names = []
-    storeOffers.map(offer => {
-      const skin = SKIN_LEVELS.find(x => x.id.toLowerCase() === offer)
-      names.push(skin ? skin.name : '')
-    })
-
-    return names
+    return storeOffers
   }
 }
 
