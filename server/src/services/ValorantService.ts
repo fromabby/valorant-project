@@ -1,27 +1,34 @@
+import AuthorizationConnector from "@utils/authorizationConnector"
+import StoreConnector from "@utils/storeConnector"
 import axios from "axios"
 
 type StoreResponse = [string, string, string, string]
-type LoginResponse = {
-  response: {
-    parameters: {
-      uri: string
-    }
+type GetUserResult = {
+  storeOffers: StoreResponse
+  playerId: string
+}
+type LoginParameters = {
+  parameters: {
+    uri: string
   }
+}
+type LoginResponse = {
+  response: LoginParameters
 }
 interface ValorantServiceResponse {
   storeOffers: StoreResponse
   playerId: string
 }
 
-
 class ValorantService {
   cookies: string[]
   accessToken: string
-  uri: string
   entitlementToken: string
   username: string
   password: string
   playerId: string
+  authConnector
+  storeConnector
 
   constructor(username: string, password: string) {
     this.username = username
@@ -29,63 +36,31 @@ class ValorantService {
     this.cookies = []
     this.accessToken = ""
     this.entitlementToken = ""
-    this.uri = ""
     this.playerId = ""
+    this.authConnector = new AuthorizationConnector()
+    this.storeConnector = new StoreConnector()
   }
 
   async initializeUser(): Promise<ValorantServiceResponse> {
-    this.cookies = await this.getCookie()
     const { response } = await this.login()
-
-    this.accessToken = response.parameters.uri.split('&')[0].split('https://playvalorant.com/opt_in#access_token=')[1]
-
-    await this.getEntitlement()
-    await this.getUserInfo()
-    const storeOffers = await this.getStore()
+    
+    this.accessToken = this._getAccessToken(response)
+    
+    await this._getEntitlement()
+    const { playerId, storeOffers } = await this.getUserData()
 
     return {
       storeOffers,
-      playerId: this.playerId
+      playerId
     }
   }
-  
-  private async getCookie(): Promise<string[]> {
-    const { headers } = await axios.post(
-      `https://auth.riotgames.com/api/v1/authorization`,
-      {
-        "client_id": "play-valorant-web-prod",
-        "nonce": "1",
-        "redirect_uri": "https://playvalorant.com/opt_in",
-        "response_type": "token id_token",
-        "scope": "account openid"
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }
-    )
 
-    return headers['set-cookie'] || []
+  private _getAccessToken(response: LoginParameters) {
+    return response.parameters.uri.split('&')[0].split('https://playvalorant.com/opt_in#access_token=')[1]
   }
 
   private async login(): Promise<LoginResponse> {
-    const response = await axios.put(
-      "https://auth.riotgames.com/api/v1/authorization",
-      {
-        "type": "auth",
-        username: this.username,
-        password: this.password,
-        "remember": false,
-        "language": "en_US"
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Cookie: this.cookies
-        },
-      }
-    )
+    const response = await this.authConnector.login(this.username, this.password)
 
     if (response.data.error === 'auth_failure') {
       throw new Error("Invalid Credentials")
@@ -94,7 +69,7 @@ class ValorantService {
     return response.data
   }
 
-  private async getEntitlement(): Promise<void> {
+  private async _getEntitlement(): Promise<void> {
     const { data } = await axios.post(
       `https://entitlements.auth.riotgames.com/api/token/v1`,
       {},
@@ -109,34 +84,10 @@ class ValorantService {
     this.entitlementToken = data.entitlements_token
   }
 
-  private async getUserInfo(): Promise<void> {
-    const { data: { sub: playerId } } = await axios.get(
-      `https://auth.riotgames.com/userinfo`,
-      {
-        headers: {
-          'X-Riot-Entitlements-JWT': this.entitlementToken,
-          'Authorization': `Bearer ${this.accessToken}`
-        }
-      }
-    )
+  private async getUserData(): Promise<GetUserResult> {
+    const response = await this.storeConnector.getUser(this.entitlementToken, this.accessToken)
 
-    this.playerId = playerId
-  }
-
-  private async getStore(): Promise<StoreResponse> {
-    const storeResponse = await axios.get(
-      `https://pd.ap.a.pvp.net/store/v2/storefront/${this.playerId}`,
-      {
-        headers: {
-          'X-Riot-Entitlements-JWT': this.entitlementToken,
-          'Authorization': `Bearer ${this.accessToken}`
-        }
-      }
-    )
-
-    const storeOffers = storeResponse.data['SkinsPanelLayout']['SingleItemOffers']
-
-    return storeOffers
+    return response
   }
 }
 
