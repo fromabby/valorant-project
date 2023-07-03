@@ -1,4 +1,6 @@
-const EQUIPS = [
+import { ValorantDataType } from "@customTypes/valorant"
+
+const EQUIPS: ValorantDataType = [
   {
     "name": "Headhunter",
     "id": "856D9A7E-4B06-DC37-15DC-9D809C37CB90",

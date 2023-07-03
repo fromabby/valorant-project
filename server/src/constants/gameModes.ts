@@ -1,4 +1,6 @@
-const GAME_MODES = [
+import { ValorantDataType } from "@customTypes/valorant"
+
+const GAME_MODES: ValorantDataType = [
   {
     "name": "Standard",
     "id": "96BD3920-4F36-D026-2B28-C683EB0BCAC5",

@@ -1,4 +1,6 @@
-const CHROMAS = [
+import { ValorantDataType } from "@customTypes/valorant"
+
+const CHROMAS: ValorantDataType = [
   {
     "name": "Altitude Odin",
     "id": "092A25A4-422F-F577-37AC-26A5D489C155",

@@ -1,4 +1,6 @@
-const CHARMS = [
+import { ValorantDataType } from "@customTypes/valorant"
+
+const CHARMS: ValorantDataType = [
   {
     "name": "Task Force 809 Buddy",
     "id": "F2F07EAE-4518-15EB-546B-018961E0DD60",

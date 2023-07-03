@@ -1,4 +1,6 @@
-const SKINS = [
+import { ValorantDataType } from "@customTypes/valorant"
+
+const SKINS: ValorantDataType = [
   {
     "name": "Altitude Odin",
     "id": "89BE9866-4807-6235-2A95-499CD23828DF",
@@ -3311,7 +3313,7 @@ const SKINS = [
   }
 ]
 
-export const SKIN_LEVELS = [
+export const SKIN_LEVELS: ValorantDataType = [
   {
     "name": "Altitude Odin",
     "id": "578E9077-4F88-260C-E54C-B988425C60E4",

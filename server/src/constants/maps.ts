@@ -1,4 +1,6 @@
-const MAPS = [
+import { ValorantDataType } from "@customTypes/valorant"
+
+const MAPS: ValorantDataType = [
   {
     "name": "Null UI Data!",
     "id": "7A929CD8-4021-C128-5A21-BC896C1929BA",

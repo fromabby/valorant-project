@@ -1,4 +1,6 @@
-const PLAYER_CARDS = [
+import { ValorantDataType } from "@customTypes/valorant"
+
+const PLAYER_CARDS: ValorantDataType = [
   {
     "name": "The Way Forward Card",
     "id": "33C1F011-4ECA-068C-9751-F68C788B2EEE",

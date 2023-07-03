@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "module": "commonjs",
+    "baseUrl": "./src",
+    "paths": {
+      "@constants/*": [ "constants/*" ],
+      "@services/*": [ "services/*" ],
+      "@models/*": [ "models/*" ],
+      "@utils/*": [ "utils/*" ],
+      "@routes/*": [ "routes/*" ],
+      "@customTypes/*": [ "types/*" ]
+    },
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "skipLibCheck": true
+  }
+}

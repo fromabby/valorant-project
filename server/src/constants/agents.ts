@@ -1,4 +1,6 @@
-const AGENTS = [
+import { ValorantDataType } from "@customTypes/valorant"
+
+const AGENTS: ValorantDataType = [
   {
     "name": "Gekko",
     "id": "E370FA57-4757-3604-3648-499E1F642D3F",

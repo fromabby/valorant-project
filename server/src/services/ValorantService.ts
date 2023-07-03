@@ -1,20 +1,55 @@
 import axios from "axios"
 
-class ValorantService {
-  cookies
-  accessToken
-  uri
-  entitlementToken
-  username
-  password
-  playerId
+type StoreResponse = [string, string, string, string]
+type LoginResponse = {
+  response: {
+    parameters: {
+      uri: string
+    }
+  }
+}
+interface ValorantServiceResponse {
+  storeOffers: StoreResponse
+  playerId: string
+}
 
-  constructor(username, password) {
+
+class ValorantService {
+  cookies: string[]
+  accessToken: string
+  uri: string
+  entitlementToken: string
+  username: string
+  password: string
+  playerId: string
+
+  constructor(username: string, password: string) {
     this.username = username
     this.password = password
+    this.cookies = []
+    this.accessToken = ""
+    this.entitlementToken = ""
+    this.uri = ""
+    this.playerId = ""
   }
 
-  async getCookie() {
+  async initializeUser(): Promise<ValorantServiceResponse> {
+    this.cookies = await this.getCookie()
+    const { response } = await this.login()
+
+    this.accessToken = response.parameters.uri.split('&')[0].split('https://playvalorant.com/opt_in#access_token=')[1]
+
+    await this.getEntitlement()
+    await this.getUserInfo()
+    const storeOffers = await this.getStore()
+
+    return {
+      storeOffers,
+      playerId: this.playerId
+    }
+  }
+  
+  private async getCookie(): Promise<string[]> {
     const { headers } = await axios.post(
       `https://auth.riotgames.com/api/v1/authorization`,
       {
@@ -31,10 +66,10 @@ class ValorantService {
       }
     )
 
-    return headers['set-cookie']
+    return headers['set-cookie'] || []
   }
 
-  async login() {
+  private async login(): Promise<LoginResponse> {
     const response = await axios.put(
       "https://auth.riotgames.com/api/v1/authorization",
       {
@@ -53,33 +88,13 @@ class ValorantService {
     )
 
     if (response.data.error === 'auth_failure') {
-      throw new Object({
-        response: {
-          data: "Invalid Credentials"
-        }
-      })
+      throw new Error("Invalid Credentials")
     }
 
     return response.data
   }
 
-  async initializeUser() {
-    this.cookies = await this.getCookie()
-    const { response } = await this.login()
-
-    this.accessToken = response.parameters.uri.split('&')[0].split('https://playvalorant.com/opt_in#access_token=')[1]
-
-    await this.getEntitlement()
-    await this.getUserInfo()
-    const storeOffers = await this.getStore()
-
-    return {
-      storeOffers,
-      playerId: this.playerId
-    }
-  }
-
-  async getEntitlement() {
+  private async getEntitlement(): Promise<void> {
     const { data } = await axios.post(
       `https://entitlements.auth.riotgames.com/api/token/v1`,
       {},
@@ -94,7 +109,7 @@ class ValorantService {
     this.entitlementToken = data.entitlements_token
   }
 
-  async getUserInfo() {
+  private async getUserInfo(): Promise<void> {
     const { data: { sub: playerId } } = await axios.get(
       `https://auth.riotgames.com/userinfo`,
       {
@@ -108,7 +123,7 @@ class ValorantService {
     this.playerId = playerId
   }
 
-  async getStore() {
+  private async getStore(): Promise<StoreResponse> {
     const storeResponse = await axios.get(
       `https://pd.ap.a.pvp.net/store/v2/storefront/${this.playerId}`,
       {

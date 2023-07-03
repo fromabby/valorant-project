@@ -1,4 +1,6 @@
-const SPRAYS = [
+import { ValorantDataType } from "@customTypes/valorant"
+
+const SPRAYS: ValorantDataType = [
   {
     "name": "Caught on Camera Spray",
     "id": "3D2BCFC5-442B-812E-3C08-9180D6B36077",
@@ -2031,7 +2033,7 @@ const SPRAYS = [
   }
 ]
 
-export const SPRAY_LEVELS = [
+export const SPRAY_LEVELS: ValorantDataType = [
   {
     "name": "Caught on Camera Spray",
     "id": "20D547A4-4EC8-C9EF-DD9D-1C8B74D0E6F7",
